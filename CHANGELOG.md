@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# shake-off Changelog
+# Shake Off Changelog
 
 ## [Unreleased]
 ### Added

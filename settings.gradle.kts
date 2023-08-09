@@ -1,1 +1,1 @@
-rootProject.name = "shake-off"
+rootProject.name = "shakeoff"

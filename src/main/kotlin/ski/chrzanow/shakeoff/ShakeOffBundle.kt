@@ -1,13 +1,13 @@
-package com.github.hsz.shakeoff
+package ski.chrzanow.shakeoff
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 @NonNls
-private const val BUNDLE = "messages.MyBundle"
+private const val BUNDLE = "messages.ShakeOffBundle"
 
-object MyBundle : DynamicBundle(BUNDLE) {
+object ShakeOffBundle : DynamicBundle(BUNDLE) {
 
     @JvmStatic
     fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =
