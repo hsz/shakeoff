@@ -29,6 +29,10 @@ class ShakeOffStartupActivity : StartupActivity {
     private val shakeDistanceThreshold = 20 // pixel distance
 
     override fun runActivity(project: Project) {
+        if (ApplicationManager.getApplication().isUnitTestMode) {
+            return
+        }
+
         IdeEventQueue.getInstance().addDispatcher({ event ->
             val time = System.currentTimeMillis()
 
@@ -39,13 +43,12 @@ class ShakeOffStartupActivity : StartupActivity {
                         if (abs(dx) > shakeDistanceThreshold) {
                             val currentDirection = sign(dx.toDouble()).toInt()
                             if (currentDirection != lastDirection) {
-                                if (directionChangeCounter == 0 || System.currentTimeMillis() - lastChangeTime <= shakeTimeThreshold) {
-                                    directionChangeCounter++
-                                } else {
-                                    directionChangeCounter = 1
+                                directionChangeCounter = when {
+                                    directionChangeCounter == 0 || time - lastChangeTime <= shakeTimeThreshold -> directionChangeCounter + 1
+                                    else -> 1
                                 }
 
-                                lastChangeTime = System.currentTimeMillis()
+                                lastChangeTime = time
                                 lastDirection = currentDirection
 
                                 if (directionChangeCounter >= shakeCountsThreshold) {
@@ -67,7 +70,7 @@ class ShakeOffStartupActivity : StartupActivity {
                 }
             }
             false
-        }, ApplicationManager.getApplication())
+        }, null)
     }
 
     private fun updateDirectionAndTimeStamps(direction: Int, time: Long) {
