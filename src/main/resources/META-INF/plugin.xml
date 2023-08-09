@@ -9,6 +9,10 @@
     <resource-bundle>messages.ShakeOffBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="ski.chrzanow.shakeoff.startup.ShakeOffStartupActivity"/>
+        <applicationService serviceImplementation="ski.chrzanow.shakeoff.settings.ShakeOffSettings"/>
+        <backgroundPostStartupActivity implementation="ski.chrzanow.shakeoff.startup.ShakeOffStartupActivity"/>
+        <backgroundPostStartupActivity implementation="ski.chrzanow.shakeoff.startup.TutorialStartupActivity"/>
+        <!--suppress PluginXmlCapitalization -->
+        <notificationGroup bundle="messages.ShakeOffBundle" displayType="BALLOON" id="ShakeOff" key="notification.group" toolWindowId="Project"/>
     </extensions>
 </idea-plugin>

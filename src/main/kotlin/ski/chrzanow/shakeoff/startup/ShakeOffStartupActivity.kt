@@ -1,12 +1,19 @@
 package ski.chrzanow.shakeoff.startup
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.IdeEventQueue
+import com.intellij.notification.NotificationAction
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.ui.DialogEarthquakeShaker
 import com.intellij.openapi.wm.WindowManager
+import ski.chrzanow.shakeoff.ShakeOffBundle.message
+import ski.chrzanow.shakeoff.settings.ShakeOffSettings
+import ski.chrzanow.shakeoff.utils.Notify
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.event.KeyEvent.*
@@ -16,6 +23,8 @@ import kotlin.math.abs
 import kotlin.math.sign
 
 class ShakeOffStartupActivity : StartupActivity {
+
+    private val settings = service<ShakeOffSettings>()
 
     private val lastDirections = IntArray(3)
     private val timeStamps = LongArray(3) { System.currentTimeMillis() }
@@ -54,6 +63,7 @@ class ShakeOffStartupActivity : StartupActivity {
                                 if (directionChangeCounter >= shakeCountsThreshold) {
                                     shakeOff(project)
                                     clearData()
+                                    showNotification(project)
                                 }
                             }
                             lastMousePoint = event.point
@@ -85,6 +95,7 @@ class ShakeOffStartupActivity : StartupActivity {
         if (timeFrame <= 1000 && isSequenceValid()) {
             shakeOff(project)
             clearData()
+            showNotification(project)
         }
     }
 
@@ -107,6 +118,27 @@ class ShakeOffStartupActivity : StartupActivity {
 
         with(ActionManager.getInstance()) {
             tryToExecute(getAction("ClearAllNotifications"), null, null, null, true)
+        }
+    }
+
+    private fun showNotification(project: Project) {
+        if (settings.tutorialShook) {
+            return
+        }
+
+        settings.tutorialShook = true
+
+        ApplicationManager.getApplication().invokeLater {
+            Notify.show(
+                project,
+                message("notification.tutorial.title"),
+                message("notification.tutorial.finalize"),
+                NotificationType.INFORMATION,
+            ) {
+                addAction(NotificationAction.createSimple(message("notification.tutorial.action.open")) {
+                    BrowserUtil.open(message("notification.tutorial.action.url"))
+                })
+            }
         }
     }
 }
